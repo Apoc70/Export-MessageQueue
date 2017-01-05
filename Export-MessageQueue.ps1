@@ -1,51 +1,52 @@
 <#
-    .SYNOPSIS
-    Export messages from a transport queue to file system for manual replay 
+  .SYNOPSIS
+  Export messages from a transport queue to file system for manual replay 
    
-   	Thomas Stensitzki
+  Thomas Stensitzki
 	
-	THIS CODE IS MADE AVAILABLE AS IS, WITHOUT WARRANTY OF ANY KIND. THE ENTIRE 
-	RISK OF THE USE OR THE RESULTS FROM THE USE OF THIS CODE REMAINS WITH THE USER.
+  THIS CODE IS MADE AVAILABLE AS IS, WITHOUT WARRANTY OF ANY KIND. THE ENTIRE 
+  RISK OF THE USE OR THE RESULTS FROM THE USE OF THIS CODE REMAINS WITH THE USER.
 	
-	Version 1.0, 2016-02-17
+  Version 1.1, 2017-01-05
 
-    Ideas, comments and suggestions to support@granikos.eu 
+  Ideas, comments and suggestions to support@granikos.eu 
  
-    .LINK  
-    More information can be found at http://www.granikos.eu/en/scripts 
+  .LINK  
+  More information can be found at http://scripts.granikos.eu
 	
-    .DESCRIPTION
+  .DESCRIPTION
 	
-    This script suspends a transport queue, exports the messages to the local file system. After successful export the messages are optionally deleted from the queue.
+  This script suspends a transport queue, exports the messages to the local file system. After successful export the messages are optionally deleted from the queue.
     
-    .NOTES 
-    Requirements 
-    - Windows Server 2008 R2 SP1, Windows Server 2012 or Windows Server 2012 R2  
-    - Utilizes global functions library
+  .NOTES 
+  Requirements 
+  - Windows Server 2008 R2 SP1, Windows Server 2012 or Windows Server 2012 R2  
+  - Utilizes global functions library
 
-    Revision History 
-    -------------------------------------------------------------------------------- 
-    1.0     Initial community release 
+  Revision History 
+  -------------------------------------------------------------------------------- 
+  1.0     Initial community release 
+  1.1     Some PowerShell hygiene
 	
-	.PARAMETER Queue
-    Full name of the transport queue, e.g. SERVER\354
-    Use Get-Queue -Server SERVERNAME to identify message queue
+  .PARAMETER Queue
+  Full name of the transport queue, e.g. SERVER\354
+  Use Get-Queue -Server SERVERNAME to identify message queue
 
-    .PARAMETER Path
-    Path to folder for exprted messages
+  .PARAMETER Path
+  Path to folder for exprted messages
 
-    .PARAMETER DeleteAfterExport
-    Switch to delete per Exchange Server subfolders and creating new folders
+  .PARAMETER DeleteAfterExport
+  Switch to delete per Exchange Server subfolders and creating new folders
 
-	.EXAMPLE
-    Export messages from queue MCMEP01\45534 to D:\ExportedMessages and do not delete messages after export
+  .EXAMPLE
+  Export messages from queue MCMEP01\45534 to D:\ExportedMessages and do not delete messages after export
 
-    .\Export-MessageQueue -Queue MCMEP01\45534 -Path D:\ExportedMessages
+  .\Export-MessageQueue -Queue MCMEP01\45534 -Path D:\ExportedMessages
 
-    .EXAMPLE
-    Export messages from queue MCMEP01\45534 to D:\ExportedMessages and delete messages after export
+  .EXAMPLE
+  Export messages from queue MCMEP01\45534 to D:\ExportedMessages and delete messages after export
 
-    .\Export-MessageQueue -Queue MCMEP01\45534 -Path D:\ExportedMessages -DeleteAfterExport
+  .\Export-MessageQueue -Queue MCMEP01\45534 -Path D:\ExportedMessages -DeleteAfterExport
 
 #>
 param(
@@ -53,11 +54,10 @@ param(
 		[string] $Queue,
 	[parameter(Mandatory=$true,HelpMessage='File path to local folder for exprted messages (e.g. E:\Export)')]
 		[string] $Path,
-	[parameter(Mandatory=$false,HelpMessage='Target Exchange server to copy the selected receive connector to')]
 		[switch] $DeleteAfterExport
 )
 
-Set-StrictMode -Version Latest
+# Set-StrictMode -Version Latest
 
 # Implementation of global module
 Import-Module GlobalFunctions
@@ -113,7 +113,7 @@ function Export-Messages {
         # Fetch suspended messages
         $logger.Write("Fetching suspended messages from queue $($Queue)")
         
-        $messages = @(Get-Message $Queue -ResultSite Unlimited | ?{$_.Status -eq "Suspened"} )
+        $messages = @(Get-Message $Queue -ResultSite Unlimited | Where-Object{$_.Status -eq "Suspened"} )
 
         $logger.Write("$($messages.Count) suspended messages fetched from queue $($Queue)")
 
@@ -126,7 +126,7 @@ function Export-Messages {
 function Delete-Messages {
     # Delete suspended messages from queue
     $logger.Write("Delete  suspended messages from queue $($Queue)")
-    Get-Message -Queue $Queue -ResultSize Unlimited | ?{$_.Status -eq "Suspened"} | Remove-Message -WithNDR $false -Confirm:$false 
+    Get-Message -Queue $Queue -ResultSize Unlimited | Where-Object{$_.Status -eq "Suspened"} | Remove-Message -WithNDR $false -Confirm:$false 
 }
 
 
