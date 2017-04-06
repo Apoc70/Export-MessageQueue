@@ -1,26 +1,23 @@
-# Get-DailyBackupAlerts.ps1
+# Export-MessageQueue.ps1
 Export messages from a transport queue to file system for manual replay 
 
-##Description
+## Description
 This script suspends a transport queue, exports the messages to the local file system. After successful export the messages are optionally deleted from the queue.
 
 This script utilizes the GlobalFunctions library https://github.com/Apoc70/GlobalFunctions
 
-##Inputs
-.PARAMETER Queue
+## Parameters
+### Queue
 Full name of the transport queue, e.g. SERVER\354
 Use Get-Queue -Server SERVERNAME to identify message queue
 
-.PARAMETER Path
+### Path
 Path to folder for exprted messages
 
-.PARAMETER DeleteAfterExport
+### DeleteAfterExport
 Switch to delete per Exchange Server subfolders and creating new folders
 
-##Outputs
-None
-
-##Examples
+## Examples
 ```
 .\Export-MessageQueue -Queue MCMEP01\45534 -Path D:\ExportedMessages
 ```
@@ -31,15 +28,14 @@ Export messages from queue MCMEP01\45534 to D:\ExportedMessages and do not delet
 ```
 Export messages from queue MCMEP01\45534 to D:\ExportedMessages and delete messages after export
 
-##TechNet Gallery
+## TechNet Gallery
 Find the script at TechNet Gallery
-* --
+* https://gallery.technet.microsoft.com/Export-Messages-from-edd2c939
 
-
-##Credits
+## Credits
 Written by: Thomas Stensitzki
 
-Find me online:
+## Social
 
 * My Blog: https://www.granikos.eu/en/justcantgetenough
 * Archived Blog:	http://www.sf-tools.net/
