@@ -1,6 +1,10 @@
 # Export-MessageQueue.ps1
 
-Export messages from a transport queue to file system for manual replay 
+Export messages from a transport queue to file system for manual replay
+
+## NOTE
+
+This repository is archived. You can find future versions of the script in this new [repository](https://github.com/Apoc70/PowerShell-Scripts).
 
 ## Description
 
